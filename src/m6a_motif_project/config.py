@@ -9,7 +9,7 @@ np.random.seed(RANDOM_SEED)
 FLANK_WINDOW = 25  # ±25 nt yields a 51 nt total window
 
 # Project-Specific Source URLs for Documentation/Scripts
-RMBASE_M6A_URL = "http://bioinformaticsscience.cn/rmbase/download/hg38/hg38_m6A_site.bed.gz"
+RMBASE_M6A_URL = "https://raw.githubusercontent.com/mevers/RNAModR/master/inst/extdata/miCLIP_m6A_Linder2015_hg38.bed"
 GENCODE_FASTA_URL = "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/GRCh38.primary_assembly.genome.fa.gz"
 GENCODE_GTF_URL = "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.primary_assembly.annotation.gtf.gz"
 
