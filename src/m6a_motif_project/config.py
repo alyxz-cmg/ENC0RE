@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 # Reproducibility
@@ -7,10 +8,17 @@ np.random.seed(RANDOM_SEED)
 # Data Pipeline Settings
 FLANK_WINDOW = 25  # ±25 nt yields a 51 nt total window
 
-# Source URLs for Documentation/Scripts
+# Project-Specific Source URLs for Documentation/Scripts
 RMBASE_M6A_URL = "http://bioinformaticsscience.cn/rmbase/download/hg38/hg38_m6A_site.bed.gz"
 GENCODE_FASTA_URL = "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/GRCh38.primary_assembly.genome.fa.gz"
 GENCODE_GTF_URL = "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.primary_assembly.annotation.gtf.gz"
+
+# Concrete Tree File Paths
+RAW_BED_PATH = os.path.join("data", "raw", "encore", "hg38_m6A_site.bed")
+RAW_FASTA_PATH = os.path.join("data", "raw", "reference", "GRCh38.primary_assembly.genome.fa")
+RAW_GTF_PATH = os.path.join("data", "raw", "reference", "gencode.v44.primary_assembly.annotation.gtf")
+
+INTERIM_POSITIVE_CSV = os.path.join("data", "interim", "positives", "positive_sequences.csv")
 
 # MCMC Modeling Settings
 MOTIF_WIDTH = 5   # Canonical DRACH length
