@@ -1,0 +1,17 @@
+name: m6a-structure-mcmc
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.10
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - seaborn
+  - pyfaidx         # Fast genomic sequence extraction
+  - logomaker       # For plotting sequence logos
+  - pip
+  - pip:
+    - ushuffle      # For dinucleotide-preserving shuffling
