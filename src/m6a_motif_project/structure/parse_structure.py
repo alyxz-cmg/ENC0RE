@@ -10,15 +10,26 @@ def parse_lunp_file(file_path, seq_len=51):
         
     with open(file_path, 'r') as f:
         for line in f:
-            if line.startswith('#') or not line.strip():
+            line_stripped = line.strip()
+            # Skip empty lines, comment lines, or structural metadata headers
+            if not line_stripped or line_stripped.startswith('#'):
                 continue
-            parts = line.split()
+                
+            parts = line_stripped.split()
             if len(parts) >= 2:
+                if not parts[0].isdigit():
+                    continue
+                    
                 # 1-based index from file -> 0-based index for numpy array
                 pos_idx = int(parts[0]) - 1 
-                # Column index 1 contains the l=1 single-nucleotide probability
-                prob = float(parts[1])
-                if 0 <= pos_idx < seq_len:
-                    p_unpaired[pos_idx] = prob
+                
+                # Column index 1 contains the l=1 single-nucleotide unpairing probability
+                try:
+                    prob = float(parts[1])
+                    if 0 <= pos_idx < seq_len:
+                        p_unpaired[pos_idx] = prob
+                except ValueError:
+                    # Guard against non-numeric data in the probability columns
+                    continue
                     
     return p_unpaired
