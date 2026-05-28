@@ -8,6 +8,7 @@ class BaselineGibbsSampler:
         self.W = motif_width
         self.pseudocount = pseudocount
         self.rng = np.random.default_rng(seed)
+        self.ll_history = []
         
         # DNA/RNA alphabet mapping
         self.alphabet = ['A', 'C', 'G', 'T']
@@ -80,6 +81,8 @@ class BaselineGibbsSampler:
             
             self.z[i] = self.rng.choice(valid_starts, p=probs)
 
+        self.ll_history.append(self.get_log_likelihood())
+
     def get_consensus(self):
         """Returns the consensus string of the current PWM."""
         pwm = self._get_pwm(self._get_count_matrix())
@@ -104,6 +107,7 @@ class StructureAwareGibbsSampler(BaselineGibbsSampler):
         # Store the structural prior matrix and weighting hyperparameter
         self.unpaired_probs = unpaired_probs
         self.alpha = alpha
+        self.ll_history = []
 
     def step(self):
         """Executes one round of collapsed Gibbs sampling, incorporating structural priors."""
@@ -135,3 +139,5 @@ class StructureAwareGibbsSampler(BaselineGibbsSampler):
             probs = weights / np.sum(weights)
             
             self.z[i] = self.rng.choice(valid_starts, p=probs)
+
+        self.ll_history.append(self.get_log_likelihood())
