@@ -86,6 +86,16 @@ class BaselineGibbsSampler:
         consensus_idx = np.argmax(pwm, axis=0)
         return "".join([self.alphabet[i] for i in consensus_idx])
     
+    def get_log_likelihood(self):
+        """Calculates the log-likelihood of the current sampled windows under the PWM."""
+        pwm = self._get_pwm(self._get_count_matrix())
+        ll_total = 0.0
+        for i in range(self.num_seqs):
+            start = self.z[i]
+            window = self.seq_matrix[i, start:start+self.W]
+            ll_total += np.sum(np.log(pwm[window, np.arange(self.W)]))
+        return ll_total
+    
 class StructureAwareGibbsSampler(BaselineGibbsSampler):
     def __init__(self, sequences, unpaired_probs, alpha=1.0, motif_width=5, pseudocount=1.0, seed=42):
         # Initialize the baseline sequence matrices and background frequencies
