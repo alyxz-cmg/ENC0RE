@@ -85,3 +85,43 @@ class BaselineGibbsSampler:
         pwm = self._get_pwm(self._get_count_matrix())
         consensus_idx = np.argmax(pwm, axis=0)
         return "".join([self.alphabet[i] for i in consensus_idx])
+    
+class StructureAwareGibbsSampler(BaselineGibbsSampler):
+    def __init__(self, sequences, unpaired_probs, alpha=1.0, motif_width=5, pseudocount=1.0, seed=42):
+        # Initialize the baseline sequence matrices and background frequencies
+        super().__init__(sequences, motif_width, pseudocount, seed)
+        
+        # Store the structural prior matrix and weighting hyperparameter
+        self.unpaired_probs = unpaired_probs
+        self.alpha = alpha
+
+    def step(self):
+        """Executes one round of collapsed Gibbs sampling, incorporating structural priors."""
+        for i in range(self.num_seqs):
+            counts = self._get_count_matrix(exclude_idx=i)
+            pwm = self._get_pwm(counts)
+            
+            valid_starts = self.seq_len - self.W + 1
+            log_weights = np.zeros(valid_starts)
+            
+            for j in range(valid_starts):
+                window = self.seq_matrix[i, j:j+self.W]
+                
+                # Sequence Likelihoods
+                ll_motif = np.sum(np.log(pwm[window, np.arange(self.W)]))
+                ll_bg = np.sum(np.log(self.bg_freqs[window]))
+                
+                # Structural Prior: Proportional to the mean unpaired probability of the window
+                mean_unpaired = np.mean(self.unpaired_probs[i, j:j+self.W])
+                
+                # Add epsilon (1e-9) to prevent log(0) domain errors for perfectly paired windows
+                ll_prior = self.alpha * np.log(mean_unpaired + 1e-9)
+                
+                # Combine sequence likelihood ratio with the structural prior
+                log_weights[j] = ll_motif - ll_bg + ll_prior
+            
+            # Numeric stability subtraction before exponentiation
+            weights = np.exp(log_weights - np.max(log_weights))
+            probs = weights / np.sum(weights)
+            
+            self.z[i] = self.rng.choice(valid_starts, p=probs)
