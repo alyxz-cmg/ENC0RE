@@ -57,33 +57,23 @@ def plot_stability_heatmap(data, output_dir):
     plt.close()
     print("  -> Generated: stability_heatmaps.png")
 
-def plot_main_comparison_logos(data, output_dir, pos_csv):
-    """Generates side-by-side sequence logos for the best Baseline and Structure chains."""
+def plot_main_comparison_logos(data, output_dir):
+    """Generates side-by-side sequence logos using the true learned PWMs from the MCMC chains."""
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
     
-    pos_df = pd.read_csv(pos_csv)
-    alphabet = ['A', 'C', 'G', 'T']
-    char_to_idx = {c: i for i, c in enumerate(alphabet)}
-    
     for idx, model in enumerate(["baseline", "structure"]):
+        # Identify the chain that achieved the highest final log-likelihood
         ll_finals = [history[-1] for history in data[model]["ll_history"]]
         best_chain_idx = np.argmax(ll_finals)
-        best_consensus = data[model]["consensus"][best_chain_idx]
-
-        matched_windows = []
-        for seq in pos_df['sequence']:
-            seq_clean = seq.replace('U', 'T')
-            match_idx = seq_clean.find(best_consensus)
-            if match_idx != -1:
-                matched_windows.append([char_to_idx.get(c, 0) for c in seq_clean[match_idx:match_idx+5]])
-                
-        counts = np.zeros((4, 5))
-        for win in matched_windows:
-            for pos, base in enumerate(win):
-                counts[base, pos] += 1
-                
-        pwm = (counts + 1.0) / (counts + 1.0).sum(axis=0, keepdims=True)
         
+        pwm_key = "pwms" if "pwms" in data[model] else "pwm"
+        if pwm_key in data[model]:
+            pwm = np.array(data[model][pwm_key][best_chain_idx])
+        else:
+            print(f"Error: Could not find true PWM matrices under keys 'pwm' or 'pwms' in log for {model}.")
+            return
+            
+        # Plot using the true probability distributions
         title = f"{model.upper()} Top Motif\n(Chain {best_chain_idx}, LL: {ll_finals[best_chain_idx]:.0f})"
         plot_sequence_logo(pwm, ax=axes[idx], title=title)
         
@@ -91,12 +81,11 @@ def plot_main_comparison_logos(data, output_dir, pos_csv):
     logo_path = os.path.join(output_dir, "main_comparison_logos.png")
     plt.savefig(logo_path, dpi=300)
     plt.close()
-    print(f"  -> Generated: main_comparison_logos.png")
+    print(f"  -> Generated: main_comparison_logos.png (True Matrix Profile)")
 
 def main():
     print("--- Transforming Trajectories Into Visual Figures ---")
     log_file = os.path.join("results", "logs", "experiment_logs.json")
-    pos_csv = config.INTERIM_POSITIVE_CSV
     output_dir = os.path.join("results", "figures")
     os.makedirs(output_dir, exist_ok=True)
     
@@ -110,7 +99,7 @@ def main():
     plot_convergence(data, output_dir)
     plot_stability_heatmap(data, output_dir)
     
-    plot_main_comparison_logos(data, output_dir, pos_csv)
+    plot_main_comparison_logos(data, output_dir)
     
     print(f"✅ All publication visual elements exported successfully to: {output_dir}")
 
