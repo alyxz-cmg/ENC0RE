@@ -44,7 +44,7 @@ By integrating per-nucleotide RNA unpairing probabilities calculated via `RNAplf
 ### 1. Environment Setup
 
 Clone this repository and instantiate the pre-configured environment:
-Bash
+```Bash
 
 git clone [https://github.com/YOUR_USERNAME/ENC0RE.git](https://github.com/YOUR_USERNAME/ENC0RE.git)
 cd ENC0RE
@@ -55,11 +55,12 @@ pip install -r requirements.txt
 # Option B: Using Conda
 conda env create -f environment.yml
 conda activate encore
+```
 
 ### 2. Complete Execution Pipeline
 
 Run the pipeline sequentially from raw data down to publication visuals using the following execution track:
-Bash
+```Bash
 
 # 1. Download primary GENCODE assembly and miCLIP tracks
 PYTHONPATH=src python scripts/download_data.py
@@ -79,7 +80,7 @@ PYTHONPATH=src python scripts/evaluate_results.py
 
 # 6. Export publication-ready convergence plots, heatmaps, and logos
 PYTHONPATH=src python scripts/make_figures.py
-
+```
 ---
 
 ## 📈 Visual Intermediate Artifacts
