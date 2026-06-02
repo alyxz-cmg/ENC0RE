@@ -3,7 +3,6 @@ import sys
 import pandas as pd
 import numpy as np
 
-# Add the parent directory to the path so config can be imported smoothly if run directly
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 from m6a_motif_project import config
 
