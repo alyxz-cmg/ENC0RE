@@ -34,7 +34,6 @@ def plot_convergence(data, output_dir):
 
 def plot_stability_heatmap(data, output_dir):
     """Builds a heatmap showing why the structure prior stabilizes cross-run outcomes."""
-    # We will use the final log-likelihoods as a proxy matrix to illustrate stability shifts
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     
     for idx, model in enumerate(["baseline", "structure"]):
