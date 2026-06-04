@@ -71,7 +71,7 @@ if st.button("🚀 Execute Gibbs Sampler", type="primary"):
             progress_bar.progress(1.0)
             
             consensus = sampler.get_consensus()
-            pwm = sampler.pwm
+            pwm = sampler.get_pwm()
             
         st.success("Sampling Complete!")
         
